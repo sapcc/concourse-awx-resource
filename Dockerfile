@@ -1,4 +1,6 @@
-FROM python:3
+FROM keppel.eu-de-1.cloud.sap/ccloud-dockerhub-mirror/python:3
+
+LABEL source_repository="https://github.com/sapcc/concourse-awx-resource"
 
 COPY assets/ /opt/resource/
 RUN chmod +x /opt/resource/*
