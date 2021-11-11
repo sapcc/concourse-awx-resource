@@ -16,6 +16,7 @@ import (
 
 type Body struct {
 	Inventory int `json:"inventory,omitempty"`
+	ExtraVars string `json:"extra_vars,omitempty"`
 }
 
 type LaunchResponse struct {
@@ -53,20 +54,23 @@ func (a *AWXResource) Out(_ string) (version interface{}, metadata []interface{}
 	logger.SetLevel(0)
 	// get inventory id
 	var jsonStr []byte
+	bdy := Body{}
 	if a.params.Inventory != "" {
 		inventoryId, err := a.getInventoryId(a.params.Inventory)
 		if err != nil {
 			logger.Warn("error getting inventory id: %v", err)
 			return nil, nil, err
 		}
-		jsonStr, err = json.Marshal(Body{Inventory: inventoryId})
-		if err != nil {
-			logger.Warn("error marshalling json body: %v", err)
-			return nil, nil, err
-		}
+		bdy.Inventory = inventoryId
+	}
+	if a.params.ExtraVars != "" {
+		bdy.ExtraVars = a.params.ExtraVars
+	}
 
-	} else {
-		jsonStr, err = json.Marshal(Body{})
+	jsonStr, err = json.Marshal(bdy)
+	if err != nil {
+		logger.Warn("error marshalling json body: %v", err)
+		return nil, nil, err
 	}
 	// launch job from template
 	req, err := http.NewRequest("POST", a.source.Endpoint+"/api/v2/job_templates/"+strconv.Itoa(a.params.TemplateId)+"/launch/", bytes.NewBuffer(jsonStr))

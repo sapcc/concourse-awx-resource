@@ -16,6 +16,7 @@ type AWXResource struct {
 
 type AWXParams struct {
 	Inventory  string `json:"inventory,omitempty"`
+	ExtraVars  string `json:"extra_vars,omitempty"`
 	TemplateId int    `json:"template_id"`
 	Debug      bool   `json:"debug,omitempty"`
 }
